@@ -1,13 +1,13 @@
 // SEGURIDAD: Si no se encuentra en localStorage info del usuario
 // no lo deja acceder a la página, redirigiendo al login inmediatamente.
 
-
+if (!localStorage.jwt) location.replace('./index.html');
 
 /* ------ comienzan las funcionalidades una vez que carga el documento ------ */
 window.addEventListener('load', function () {
 
   /* ---------------- variables globales y llamado a funciones ---------------- */
-  
+  const btnCerrarSesion = document.querySelector('#closeApp')
 
 
   /* -------------------------------------------------------------------------- */
@@ -15,7 +15,11 @@ window.addEventListener('load', function () {
   /* -------------------------------------------------------------------------- */
 
   btnCerrarSesion.addEventListener('click', function () {
-   
+    const cerrarSesion = confirm('Esta seguro de cerrar sesión ?');
+    if (cerrarSesion) {
+      localStorage.clear();
+      location.replace('./index.html');
+    }
 
 
 
@@ -26,7 +30,7 @@ window.addEventListener('load', function () {
   /* -------------------------------------------------------------------------- */
 
   function obtenerNombreUsuario() {
-   
+
 
 
 
@@ -38,8 +42,8 @@ window.addEventListener('load', function () {
   /* -------------------------------------------------------------------------- */
 
   function consultarTareas() {
-    
-    
+
+
 
 
 
@@ -51,7 +55,7 @@ window.addEventListener('load', function () {
   /* -------------------------------------------------------------------------- */
 
   formCrearTarea.addEventListener('submit', function (event) {
-    
+
 
 
 
@@ -76,8 +80,8 @@ window.addEventListener('load', function () {
   /*                  FUNCIÓN 6 - Cambiar estado de tarea [PUT]                 */
   /* -------------------------------------------------------------------------- */
   function botonesCambioEstado() {
-    
-    
+
+
 
 
 
@@ -88,10 +92,10 @@ window.addEventListener('load', function () {
   /*                     FUNCIÓN 7 - Eliminar tarea [DELETE]                    */
   /* -------------------------------------------------------------------------- */
   function botonBorrarTarea() {
-   
-    
 
-    
+
+
+
 
   };
 
