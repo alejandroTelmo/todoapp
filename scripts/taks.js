@@ -8,8 +8,10 @@ window.addEventListener('load', function () {
 
   /* ---------------- variables globales y llamado a funciones ---------------- */
   const btnCerrarSesion = document.querySelector('#closeApp')
-
-
+  const userName = document.querySelector('#userName');
+  const url = "https://ctd-todo-api.herokuapp.com/v1";
+  const token = JSON.parse(localStorage.jwt);
+  obtenerNombreUsuario();
   /* -------------------------------------------------------------------------- */
   /*                          FUNCIÓN 1 - Cerrar sesión                         */
   /* -------------------------------------------------------------------------- */
@@ -30,7 +32,21 @@ window.addEventListener('load', function () {
   /* -------------------------------------------------------------------------- */
 
   function obtenerNombreUsuario() {
-
+    const settings = {
+      method: "GET",
+      headers: {
+        authorization: token
+      }
+    }
+    fetch(`${url}/users/getMe`, settings)
+      .then(response => response.json())
+      //debo retornarlo xq sino me da undefined,
+      //si no esta en la primera linea, debo retornarlo con un return
+      .then(data => userName.innerHTML = data.firstName)
+      .catch(err => {
+        console.log("Nombre usuario NO ");
+        console.log(err);
+      })
 
 
 

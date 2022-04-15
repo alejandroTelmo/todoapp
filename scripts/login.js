@@ -5,7 +5,7 @@ window.addEventListener('load', function () {
     const correo = document.querySelector('#inputEmail');
     const contrasenia = document.querySelector('#inputPassword');
     const url = "https://ctd-todo-api.herokuapp.com/v1";
-    const userName = "";
+
 
 
     /* -------------------------------------------------------------------------- */
@@ -43,12 +43,9 @@ window.addEventListener('load', function () {
             })
             .then(data => {
                 console.log("Promesa cumplida.")
-                console.log(data);
                 if (data.jwt) {
                     //guardamos el token que me devuelve el backend
                     localStorage.setItem('jwt', JSON.stringify(data.jwt));
-                    /* userName = data.firstName
-                     console.log(userName)*/
                     //aca usamos location para redirigir, o sea una vez logueado o registrado, nos deriva a la pagina de mis tareas para que haga lo que tenga que hacer
                     location.replace('./mis-tareas.html');
                 }
