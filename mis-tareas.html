@@ -39,7 +39,7 @@
 
   <main class="container">
     <!-- carga de tareas -->
-    <form class="nueva-tarea">
+    <form class="nueva-tarea" id="tarea">
       <input id="nuevaTarea" type="text" placeholder="nueva tarea">
       <button type="submit"><i class="fa-solid fa-pencil"></i> Crear tarea</button>
     </form>
@@ -48,7 +48,10 @@
     <ul class="tareas-pendientes">
 
     </ul>
+    <!-- contenedor vacío para las tareas en ejecucion -->
+    <ul class="tareas-ejecutandose">
 
+    </ul>
     <h2>Tareas finalizadas <span id="cantidad-finalizadas">0</span></h2>
     <!-- contenedor vacío para las que pasen a terminadas -->
     <ul class="tareas-terminadas">

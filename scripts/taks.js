@@ -11,6 +11,10 @@ window.addEventListener('load', function () {
   const userName = document.querySelector('#userName');
   const url = "https://ctd-todo-api.herokuapp.com/v1";
   const token = JSON.parse(localStorage.jwt);
+  const descripcion = document.querySelector('#nuevaTarea');
+  const formCrearTarea = document.querySelector('#tarea');
+  const completada = false;
+
   obtenerNombreUsuario();
   consultarTareas();
   /* -------------------------------------------------------------------------- */
@@ -71,7 +75,10 @@ window.addEventListener('load', function () {
 
         return response.json();
       })
-      .then(data => data)
+      .then(vainilla => {
+        console.table(vainilla)
+        return vainilla;
+      })
       .catch(err => {
         console.log("Promesa rechazada.");
         console.log(err);
@@ -88,7 +95,33 @@ window.addEventListener('load', function () {
   /* -------------------------------------------------------------------------- */
 
   formCrearTarea.addEventListener('submit', function (event) {
+    event.preventDefault();
 
+    const payload = {
+      description: descripcion.value,
+      completed: false
+    }
+    const settings = {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: token
+      }
+
+    }
+    fetch(`${url}/tasks`, settings)
+      .then(response => {
+        console.log(response);
+        return response.json();
+      })
+      .then(data => {
+        console.log(data);
+
+      })
+      .catch(err => {
+        console.log(err);
+      })
 
 
 
