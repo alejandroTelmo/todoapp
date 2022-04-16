@@ -12,6 +12,7 @@ window.addEventListener('load', function () {
   const url = "https://ctd-todo-api.herokuapp.com/v1";
   const token = JSON.parse(localStorage.jwt);
   obtenerNombreUsuario();
+  consultarTareas();
   /* -------------------------------------------------------------------------- */
   /*                          FUNCIÓN 1 - Cerrar sesión                         */
   /* -------------------------------------------------------------------------- */
@@ -58,7 +59,23 @@ window.addEventListener('load', function () {
   /* -------------------------------------------------------------------------- */
 
   function consultarTareas() {
+    const settings = {
+      method: "GET",
+      headers: {
+        authorization: token
+      }
+    }
+    fetch(`${url}/tasks`, settings)
+      .then(response => {
+        console.log(response);
 
+        return response.json();
+      })
+      .then(data => data)
+      .catch(err => {
+        console.log("Promesa rechazada.");
+        console.log(err);
+      })
 
 
 
