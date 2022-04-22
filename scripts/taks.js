@@ -5,7 +5,7 @@ if (!localStorage.jwt) location.replace('./index.html');
 
 /* ------ comienzan las funcionalidades una vez que carga el documento ------ */
 window.addEventListener('load', function () {
-
+  console.log("Documento cargado y listo para escuchar eventos")
   /* ---------------- variables globales y llamado a funciones ---------------- */
   const btnCerrarSesion = document.querySelector('#closeApp')
   const userName = document.querySelector('#userName');
@@ -13,10 +13,15 @@ window.addEventListener('load', function () {
   const token = JSON.parse(localStorage.jwt);
   const descripcion = document.querySelector('#nuevaTarea');
   const formCrearTarea = document.querySelector('#tarea');
-  const completada = false;
+  const urlTareas = 'https://ctd-todo-api.herokuapp.com/v1/tasks'
 
   obtenerNombreUsuario();
   consultarTareas();
+
+
+
+
+
   /* -------------------------------------------------------------------------- */
   /*                          FUNCIÓN 1 - Cerrar sesión                         */
   /* -------------------------------------------------------------------------- */
@@ -75,9 +80,11 @@ window.addEventListener('load', function () {
 
         return response.json();
       })
-      .then(vainilla => {
-        console.table(vainilla)
-        return vainilla;
+      .then(tareas => {
+        console.table(tareas)
+        renderizarTareas(tareas)
+        botonesCambioEstado()
+        botonBorrarTarea()
       })
       .catch(err => {
         console.log("Promesa rechazada.");
@@ -110,6 +117,7 @@ window.addEventListener('load', function () {
       }
 
     }
+    console.log("Creando un tarea en la base de datos");
     fetch(`${url}/tasks`, settings)
       .then(response => {
         console.log(response);
@@ -117,10 +125,12 @@ window.addEventListener('load', function () {
       })
       .then(data => {
         console.log(data);
-
+        consultarTareas();
       })
       .catch(err => {
         console.log(err);
+        //limpiamos el form
+        formCrearTarea.reset();
       })
 
 
@@ -134,21 +144,97 @@ window.addEventListener('load', function () {
   /* -------------------------------------------------------------------------- */
   function renderizarTareas(listado) {
 
+    // obtengo listados y limpio cualquier contenido interno
+    const tareasPendientes = document.querySelector('.tareas-pendientes');
+    const tareasTerminadas = document.querySelector('.tareas-terminadas');
+    tareasPendientes.innerHTML = "";
+    tareasTerminadas.innerHTML = "";
 
+    // buscamos el numero de finalizadas
+    const numeroFinalizadas = document.querySelector('#cantidad-finalizadas');
+    let contador = 0;
+    numeroFinalizadas.innerText = contador;
 
+    listado.forEach(tarea => {
+      //variable intermedia para manipular la fecha
+      let fecha = new Date(tarea.createdAt);
 
-
-
-
+      if (tarea.completed) {
+        contador++;
+        //lo mandamos al listado de tareas completas
+        tareasTerminadas.innerHTML += `
+           <li class="tarea">
+             <div class="hecha">
+               <i class="fa-regular fa-circle-check"></i>
+             </div>
+             <div class="descripcion">
+               <p class="nombre">${tarea.description}</p>
+               <div class="cambios-estados">
+                 <button class="change incompleta" id="${tarea.id}" ><i class="fa-solid fa-rotate-left"></i></button>
+                 <button class="borrar" id="${tarea.id}"><i class="fa-regular fa-trash-can"></i></button>
+               </div>
+             </div>
+           </li>
+                         `
+      } else {
+        //lo mandamos al listado de tareas sin terminar
+        tareasPendientes.innerHTML += `
+           <li class="tarea">
+             <button class="change" id="${tarea.id}"><i class="fa-regular fa-circle"></i></button>
+             <div class="descripcion">
+               <p class="nombre">${tarea.description}</p>
+               <p class="timestamp">${fecha.toLocaleDateString()}</p>
+             </div>
+           </li>
+                         `
+      }
+      // actualizamos el contador en la pantalla
+      numeroFinalizadas.innerText = contador;
+    })
   };
 
   /* -------------------------------------------------------------------------- */
   /*                  FUNCIÓN 6 - Cambiar estado de tarea [PUT]                 */
   /* -------------------------------------------------------------------------- */
   function botonesCambioEstado() {
+    const btnCambioEstado = document.querySelectorAll(".change")
 
+    btnCambioEstado.forEach(boton => {
+      //a cada boton le asignamos una funcionalidad
+      boton.addEventListener('click', function (event) {
 
+        console.log("Cambiando estado de tarea...");
+        console.log(event);
 
+        const id = event.target.id;
+        const url = `${urlTareas}/${id}`
+        const payload = {};
+
+        //segun el tipo de boton que fue clickeado, cambiamos el estado de la tarea
+        if (event.target.classList.contains('incompleta')) {
+          // si está completada, la paso a pendiente
+          payload.completed = false;
+        } else {
+          // sino, está pendiente, la paso a completada
+          payload.completed = true;
+        }
+
+        const settingsCambio = {
+          method: 'PUT',
+          headers: {
+            "Authorization": token,
+            "Content-type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        }
+        fetch(url, settingsCambio)
+          .then(response => {
+            console.log(response.status);
+            //vuelvo a consultar las tareas actualizadas y pintarlas nuevamente en pantalla
+            consultarTareas();
+          })
+      })
+    })
 
 
   }
@@ -158,6 +244,30 @@ window.addEventListener('load', function () {
   /*                     FUNCIÓN 7 - Eliminar tarea [DELETE]                    */
   /* -------------------------------------------------------------------------- */
   function botonBorrarTarea() {
+    //obtenemos los botones de borrado
+    const btnBorrarTarea = document.querySelectorAll('.borrar');
+
+    btnBorrarTarea.forEach(boton => {
+      //a cada boton de borrado le asignamos la funcionalidad
+      boton.addEventListener('click', function (event) {
+        const id = event.target.id;
+        const url = `${urlTareas}/${id}`
+
+        const settingsCambio = {
+          method: 'DELETE',
+          headers: {
+            "Authorization": token,
+          }
+        }
+        fetch(url, settingsCambio)
+          .then(response => {
+            console.log("Borrando tarea...");
+            console.log(response.status);
+            //vuelvo a consultar las tareas actualizadas y pintarlas nuevamente en pantalla
+            consultarTareas();
+          })
+      })
+    });
 
 
 
@@ -166,3 +276,13 @@ window.addEventListener('load', function () {
   };
 
 });
+
+/**function botonesCambioEstado() {
+    const btnCambioEstado = document.querySelectorAll(".change")
+    
+    //cuando se clickea el cículo cambiamos el estado
+    //event.target.id
+
+
+
+ */

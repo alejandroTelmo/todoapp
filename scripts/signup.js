@@ -8,6 +8,7 @@ window.addEventListener('load', function () {
     const contrasenia = document.querySelector('#inputPassword');
     const contraseñaRepetida = document.querySelector('#inputPasswordRepetida');
     const url = "https://ctd-todo-api.herokuapp.com/v1";
+
     /* -------------------------------------------------------------------------- */
     /*            FUNCIÓN 1: Escuchamos el submit y preparamos el envío           */
 
